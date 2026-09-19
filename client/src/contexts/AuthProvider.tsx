@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import type { ReactNode } from 'react'
 import {
+  ApiError,
   clearToken,
   getMe,
   getToken,
@@ -9,7 +10,7 @@ import {
   register as apiRegister,
   setToken,
 } from '../api'
-import type { AuthUser, LoginPayload, RegisterPayload } from '../api'
+import type { AuthUser, LoginPayload, RegisterPayload, Role } from '../api'
 import { AuthContext } from './auth-context'
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -27,8 +28,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       try {
         const me = await getMe()
         if (active) setUser(me)
-      } catch {
-        clearToken()
+      } catch (error) {
+        // A 401 means the token is expired, invalidated (password reset), or
+        // malformed — drop it. Network/5xx errors keep the token so a refresh
+        // can retry hydration without forcing a fresh login.
+        if (error instanceof ApiError && error.status === 401) {
+          clearToken()
+        }
+        if (active) setUser(null)
       } finally {
         if (active) setLoading(false)
       }
@@ -59,9 +66,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(null)
   }, [])
 
+  const hasRole = useCallback((role: Role) => user?.role === role, [user])
+
   const value = useMemo(
-    () => ({ user, loading, login, register, logout }),
-    [user, loading, login, register, logout],
+    () => ({
+      user,
+      loading,
+      login,
+      register,
+      logout,
+      isStudent: user?.role === 'STUDENT',
+      isInstructor: user?.role === 'INSTRUCTOR',
+      isAdmin: user?.role === 'ADMIN',
+      hasRole,
+    }),
+    [user, loading, login, register, logout, hasRole],
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
