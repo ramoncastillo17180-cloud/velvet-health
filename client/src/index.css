@@ -5,36 +5,37 @@
    ============================================================ */
 
 @theme {
-  /* Brand — medical green palette */
-  --color-primary: #2b8b61;
-  --color-accent: #3cb371;
-  --color-accent-hover: #2a9659;
-  --color-success: #4caf50;
+  /* Brand — medical green palette (refined) */
+  --color-primary: #1f7a52;
+  --color-primary-dark: #14543c;
+  --color-accent: #2e9e6b;
+  --color-accent-hover: #268a5b;
+  --color-success: #22a06b;
 
   /* Light greens (decorative squares, badges, highlights) */
-  --color-green-50: #e8f5e9;
-  --color-green-100: #b7e4c7;
-  --color-green-200: #a4e6b5;
-  --color-green-300: #9bd0a9;
-  --color-green-400: #83d495;
-  --color-green-500: #72c084;
-  --color-green-selected: #d1f5df;
+  --color-green-50: #eef7f1;
+  --color-green-100: #d3ecdd;
+  --color-green-200: #a9dcc0;
+  --color-green-300: #7cc7a0;
+  --color-green-400: #54b486;
+  --color-green-500: #3ba274;
+  --color-green-selected: #dcf2e6;
 
   /* Surfaces */
-  --color-surface: #f5f5f5;
+  --color-surface: #f6faf8;
 
   /* Typography */
   --font-sans: "Montserrat", ui-sans-serif, system-ui, sans-serif;
   --font-display: "Playfair Display", Georgia, serif;
 
-  /* Radii — soft cards (14–16px) */
-  --radius-card: 14px;
-  --radius-card-lg: 16px;
+  /* Radii — soft cards */
+  --radius-card: 16px;
+  --radius-card-lg: 20px;
 
-  /* Shadows — soft */
-  --shadow-card: 0 6px 20px rgba(0, 0, 0, 0.08);
-  --shadow-card-hover: 0 8px 20px rgba(0, 0, 0, 0.08);
-  --shadow-header: 0 2px 10px rgba(0, 0, 0, 0.05);
+  /* Shadows — soft, green-tinted */
+  --shadow-card: 0 10px 30px rgba(20, 84, 60, 0.08);
+  --shadow-card-hover: 0 18px 40px rgba(20, 84, 60, 0.12);
+  --shadow-header: 0 4px 24px rgba(20, 84, 60, 0.06);
 }
 
 @layer base {
@@ -43,8 +44,13 @@
   }
 
   body {
-    @apply font-sans bg-surface text-gray-800 antialiased;
+    @apply font-sans text-gray-800 antialiased;
     min-height: 100vh;
+    background:
+      radial-gradient(1200px 600px at 100% -10%, #e7f5ee 0%, transparent 60%),
+      radial-gradient(1000px 500px at -10% 110%, #eef7f1 0%, transparent 55%),
+      #f6faf8;
+    background-attachment: fixed;
   }
 
   h1,
@@ -59,15 +65,15 @@
 
 @layer components {
   .btn-primary {
-    @apply inline-flex items-center justify-center gap-2 rounded-[10px] bg-accent px-6 py-3 font-semibold text-white transition-colors hover:bg-accent-hover disabled:cursor-not-allowed disabled:opacity-60;
+    @apply inline-flex items-center justify-center gap-2 rounded-full bg-accent px-6 py-3 font-semibold text-white shadow-sm transition-all hover:-translate-y-0.5 hover:bg-accent-hover hover:shadow-md disabled:cursor-not-allowed disabled:opacity-60;
   }
 
   .btn-outline {
-    @apply inline-flex items-center justify-center gap-2 rounded-[10px] border-2 border-accent bg-white px-6 py-3 font-semibold text-accent transition-colors hover:bg-gray-50;
+    @apply inline-flex items-center justify-center gap-2 rounded-full border-2 border-accent bg-white/70 px-6 py-3 font-semibold text-accent transition-all hover:-translate-y-0.5 hover:bg-green-50;
   }
 
   .btn-light {
-    @apply inline-flex items-center justify-center gap-2 rounded-[10px] bg-green-100 px-8 py-4 text-lg font-bold text-gray-800 shadow-sm transition hover:bg-green-300;
+    @apply inline-flex items-center justify-center gap-2 rounded-full bg-green-100 px-8 py-4 text-lg font-bold text-primary-dark shadow-sm transition-all hover:-translate-y-0.5 hover:bg-green-200;
   }
 
   .btn-pill-primary {
@@ -75,19 +81,19 @@
   }
 
   .btn-pill-outline {
-    @apply block w-full rounded-full border-2 border-accent bg-white px-4 py-2.5 font-semibold text-accent transition-colors hover:bg-gray-50;
+    @apply block w-full rounded-full border-2 border-accent bg-white px-4 py-2.5 font-semibold text-accent transition-colors hover:bg-green-50;
   }
 
   .card {
-    @apply rounded-card bg-white shadow-card;
+    @apply rounded-card border border-green-100/60 bg-white shadow-card;
   }
 
   .field-label {
-    @apply mb-1 block text-left text-sm font-semibold text-primary;
+    @apply mb-1.5 block text-left text-sm font-semibold text-primary;
   }
 
   .field-input {
-    @apply w-full rounded-[10px] border border-gray-300 bg-white px-4 py-3 text-base text-gray-800 outline-none transition placeholder:text-gray-400 focus:border-primary focus:ring-2 focus:ring-primary/30;
+    @apply w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-base text-gray-800 outline-none transition placeholder:text-gray-400 focus:border-accent focus:ring-4 focus:ring-accent/15;
   }
 }
 

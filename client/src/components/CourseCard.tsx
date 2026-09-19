@@ -35,8 +35,10 @@ export function CourseCard(props: CourseCardProps) {
         whileHover={{ y: -4 }}
         whileTap={{ scale: 0.99 }}
         aria-pressed={selected}
-        className={`flex w-full items-center justify-between gap-4 rounded-card border bg-white p-5 text-left shadow-sm transition-colors ${
-          selected ? 'border-primary bg-green-selected' : 'border-gray-200'
+        className={`flex w-full items-center justify-between gap-4 rounded-card border bg-white p-5 text-left transition-all ${
+          selected
+            ? 'border-primary bg-green-selected shadow-card'
+            : 'border-gray-200 shadow-sm hover:border-green-300'
         }`}
       >
         <div className="flex items-center gap-4">

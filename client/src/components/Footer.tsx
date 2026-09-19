@@ -2,7 +2,7 @@ import { DecorSquares } from './DecorSquares'
 
 export function Footer() {
   return (
-    <footer className="relative overflow-hidden border-t border-gray-200 bg-white py-6 text-center text-sm text-gray-600">
+    <footer className="relative overflow-hidden border-t border-green-100 bg-white py-8 text-center text-sm text-gray-600">
       <DecorSquares variant="footer" />
       <div className="relative z-10 mx-auto max-w-7xl px-5">
         <p className="mb-3">
