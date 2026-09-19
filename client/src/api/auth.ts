@@ -1,55 +1,52 @@
-// Auth endpoints with offline mock fallback.
+// Auth endpoints (real API only — no offline mock fallback).
 
-import { NetworkError, apiFetch } from './client'
-import { mockGetMe, mockLogin, mockRegister } from './mock'
+import { apiFetch } from './client'
 import type {
   AuthUser,
   LoginPayload,
   LoginResponse,
+  MessageResponse,
   RegisterPayload,
   User,
 } from './types'
 
 export async function login(payload: LoginPayload): Promise<LoginResponse> {
-  try {
-    return await apiFetch<LoginResponse>('/auth/login', {
-      method: 'POST',
-      body: payload,
-    })
-  } catch (error) {
-    if (error instanceof NetworkError) return mockLogin(payload)
-    throw error
-  }
+  return await apiFetch<LoginResponse>('/auth/login', {
+    method: 'POST',
+    body: payload,
+  })
 }
 
 export async function register(payload: RegisterPayload): Promise<User> {
-  try {
-    const data = await apiFetch<{ user: User }>('/auth/register', {
-      method: 'POST',
-      body: payload,
-    })
-    return data.user
-  } catch (error) {
-    if (error instanceof NetworkError) return mockRegister(payload)
-    throw error
-  }
+  const data = await apiFetch<{ user: User }>('/auth/register', {
+    method: 'POST',
+    body: payload,
+  })
+  return data.user
 }
 
 export async function logout(): Promise<void> {
-  try {
-    await apiFetch<void>('/auth/logout', { method: 'POST', auth: true })
-  } catch (error) {
-    if (error instanceof NetworkError) return
-    throw error
-  }
+  await apiFetch<void>('/auth/logout', { method: 'POST', auth: true })
 }
 
 export async function getMe(): Promise<AuthUser> {
-  try {
-    const data = await apiFetch<{ user: AuthUser }>('/auth/me', { auth: true })
-    return data.user
-  } catch (error) {
-    if (error instanceof NetworkError) return mockGetMe()
-    throw error
-  }
+  const data = await apiFetch<{ user: AuthUser }>('/auth/me', { auth: true })
+  return data.user
+}
+
+export async function forgotPassword(correo: string): Promise<MessageResponse> {
+  return await apiFetch<MessageResponse>('/auth/forgot-password', {
+    method: 'POST',
+    body: { correo },
+  })
+}
+
+export async function resetPassword(
+  token: string,
+  contraseña: string,
+): Promise<MessageResponse> {
+  return await apiFetch<MessageResponse>('/auth/reset-password', {
+    method: 'POST',
+    body: { token, contraseña },
+  })
 }

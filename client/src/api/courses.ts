@@ -1,29 +1,26 @@
-// Course endpoints with offline mock fallback.
+// Course endpoints (real API only — no offline mock fallback).
 
-import { ApiError, NetworkError, apiFetch } from './client'
-import { mockCourseDetails, mockCourses } from './mock'
-import type { Course, CourseDetail, CoursesResponse, CourseResponse } from './types'
+import { apiFetch } from './client'
+import type {
+  Course,
+  CourseDetail,
+  CoursesResponse,
+  CourseResponse,
+  LessonsResponse,
+  Module,
+} from './types'
 
 export async function getCourses(): Promise<Course[]> {
-  try {
-    const data = await apiFetch<CoursesResponse>('/courses')
-    return data.courses
-  } catch (error) {
-    if (error instanceof NetworkError) return mockCourses
-    throw error
-  }
+  const data = await apiFetch<CoursesResponse>('/courses')
+  return data.courses
 }
 
 export async function getCourse(slug: string): Promise<CourseDetail> {
-  try {
-    const data = await apiFetch<CourseResponse>(`/courses/${slug}`)
-    return data.course
-  } catch (error) {
-    if (error instanceof NetworkError) {
-      const course = mockCourseDetails[slug]
-      if (!course) throw new ApiError(404, 'NOT_FOUND', 'Curso no encontrado')
-      return course
-    }
-    throw error
-  }
+  const data = await apiFetch<CourseResponse>(`/courses/${slug}`)
+  return data.course
+}
+
+export async function getLessons(slug: string): Promise<Module[]> {
+  const data = await apiFetch<LessonsResponse>(`/courses/${slug}/lessons`)
+  return data.modules
 }

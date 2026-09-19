@@ -1,27 +1,9 @@
-// Results and users endpoints with offline mock fallback.
+// Results endpoints (real API only — no offline mock fallback).
 
-import { NetworkError, apiFetch } from './client'
-import { mockGetResults } from './mock'
-import type { ExamResult, PublicUser, ResultsResponse } from './types'
+import { apiFetch } from './client'
+import type { ExamResult, ResultsResponse } from './types'
 
 export async function getResults(): Promise<ExamResult[]> {
-  try {
-    const data = await apiFetch<ResultsResponse>('/me/results', { auth: true })
-    return data.results
-  } catch (error) {
-    if (error instanceof NetworkError) return mockGetResults()
-    throw error
-  }
-}
-
-export async function getUsers(): Promise<PublicUser[]> {
-  try {
-    const data = await apiFetch<{ users: PublicUser[] }>('/users', {
-      auth: true,
-    })
-    return data.users
-  } catch (error) {
-    if (error instanceof NetworkError) return []
-    throw error
-  }
+  const data = await apiFetch<ResultsResponse>('/me/results', { auth: true })
+  return data.results
 }
