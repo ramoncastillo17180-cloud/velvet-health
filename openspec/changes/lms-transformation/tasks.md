@@ -106,43 +106,43 @@ Chain strategy: feature-branch-chain
 
 ## Phase 5: Frontend Redesign + Public/Student Screens
 
-- [ ] 5.1 Modify `client/src/api/types.ts` — add `Role` type, `Module`/`Lesson`/`InstructorApplication`/`Document`/dashboard types, and `role` on `AuthUser`/`User`. Modify `client/src/api/client.ts` — add `apiUpload` (multipart `FormData`) and `apiDownload` (blob → trigger download); keep `apiFetch` for JSON. Update `client/src/api/index.ts` exports.
+- [x] 5.1 Modify `client/src/api/types.ts` — add `Role` type, `Module`/`Lesson`/`InstructorApplication`/`Document`/dashboard types, and `role` on `AuthUser`/`User`. Modify `client/src/api/client.ts` — add `apiUpload` (multipart `FormData`) and `apiDownload` (blob → trigger download); keep `apiFetch` for JSON. Update `client/src/api/index.ts` exports.
   - Verify: types compile; upload/download helpers exported.
-- [ ] 5.2 Modify `client/src/api/auth.ts` (add `forgotPassword`/`resetPassword`, remove mock fallback), `client/src/api/courses.ts` (add `getLessons`, remove mock fallback), `client/src/api/exam.ts` and `client/src/api/results.ts` (remove mock fallback). Surface `NetworkError`/`ApiError` to screens instead of returning mock data.
+- [x] 5.2 Modify `client/src/api/auth.ts` (add `forgotPassword`/`resetPassword`, remove mock fallback), `client/src/api/courses.ts` (add `getLessons`, remove mock fallback), `client/src/api/exam.ts` and `client/src/api/results.ts` (remove mock fallback). Surface `NetworkError`/`ApiError` to screens instead of returning mock data.
   - Verify: no `mock.*` imports remain in these modules; errors propagate.
-- [ ] 5.3 Modify `client/src/contexts/AuthProvider.tsx` (and `client/src/contexts/auth-context.ts`, `client/src/hooks/useAuth.ts`) — `AuthUser` gains `role`; expose `isStudent`/`isInstructor`/`isAdmin` (or `hasRole`); hydrate via `getMe` and clear token on `401`.
+- [x] 5.3 Modify `client/src/contexts/AuthProvider.tsx` (and `client/src/contexts/auth-context.ts`, `client/src/hooks/useAuth.ts`) — `AuthUser` gains `role`; expose `isStudent`/`isInstructor`/`isAdmin` (or `hasRole`); hydrate via `getMe` and clear token on `401`.
   - Verify: `role` available in context; header/profile nav can derive role-appropriate links.
-- [ ] 5.4 Create `client/src/hooks/useAsyncData.ts` — `useAsyncData(fetcher, deps)` returning `{ data, loading, error, reload }`, and shared UI primitives `client/src/components/Skeleton.tsx` (shimmer), `Spinner.tsx`, `EmptyState.tsx`, `ErrorState.tsx` (distinguishes `NetworkError` retry vs `ApiError` message).
+- [x] 5.4 Create `client/src/hooks/useAsyncData.ts` — `useAsyncData(fetcher, deps)` returning `{ data, loading, error, reload }`, and shared UI primitives `client/src/components/Skeleton.tsx` (shimmer), `Spinner.tsx`, `EmptyState.tsx`, `ErrorState.tsx` (distinguishes `NetworkError` retry vs `ApiError` message).
   - Verify: hooks/components render correctly for loading/error/empty/success states.
-- [ ] 5.5 Create the new public/student screens: `client/src/pages/Landing.tsx` (marketing home + published catalog + CTAs), `client/src/pages/LessonPlayer.tsx` (module/lesson navigation), and the password-reset screens `client/src/pages/ForgotPassword.tsx` + `client/src/pages/ResetPassword.tsx` (token via query). Wire routes in `client/src/App.tsx`.
+- [x] 5.5 Create the new public/student screens: `client/src/pages/Landing.tsx` (marketing home + published catalog + CTAs), `client/src/pages/LessonPlayer.tsx` (module/lesson navigation), and the password-reset screens `client/src/pages/ForgotPassword.tsx` + `client/src/pages/ResetPassword.tsx` (token via query). Wire routes in `client/src/App.tsx`.
   - Verify: landing shows published catalog from API; lesson player navigates adjacent lessons; reset flow submits email then token+password (generic success on forgot).
-- [ ] 5.6 Redesign existing screens to premium styling while preserving function: `client/src/pages/Home.tsx` → premium landing, `client/src/pages/Practicas.tsx` → modern catalog, `client/src/pages/CourseDetail.tsx` → course page + lesson list, `client/src/pages/Exam.tsx` → loading states, `client/src/pages/Login.tsx`/`Registro.tsx` → premium validated forms, `client/src/pages/Perfil.tsx` → enriched profile. Redesign `client/src/components/Header.tsx`, `Footer.tsx`, `Layout.tsx`.
+- [x] 5.6 Redesign existing screens to premium styling while preserving function: `client/src/pages/Home.tsx` → premium landing, `client/src/pages/Practicas.tsx` → modern catalog, `client/src/pages/CourseDetail.tsx` → course page + lesson list, `client/src/pages/Exam.tsx` → loading states, `client/src/pages/Login.tsx`/`Registro.tsx` → premium validated forms, `client/src/pages/Perfil.tsx` → enriched profile. Redesign `client/src/components/Header.tsx`, `Footer.tsx`, `Layout.tsx`.
   - Verify: screens render from API; forms show inline validation; exam shows loading before questions.
-- [ ] 5.7 Extend design-system tokens in `client/src/index.css` (Tailwind v4 `@theme`): status colors (`draft`/`pending`/`published`/`rejected`/`approved`), `.badge-role`/`.badge-status`, feedback colors (`danger`, `muted`), skeleton shimmer keyframes + `.skeleton`/`.skeleton-card`/`.skeleton-row`; keep brand tokens (`--color-primary`, `--color-accent`, fonts, radius, shadow).
+- [x] 5.7 Extend design-system tokens in `client/src/index.css` (Tailwind v4 `@theme`): status colors (`draft`/`pending`/`published`/`rejected`/`approved`), `.badge-role`/`.badge-status`, feedback colors (`danger`, `muted`), skeleton shimmer keyframes + `.skeleton`/`.skeleton-card`/`.skeleton-row`; keep brand tokens (`--color-primary`, `--color-accent`, fonts, radius, shadow).
   - Verify: tokens resolve; badges/skeletons render.
 
 ## Phase 6: Frontend Dashboards + Application + Moderation
 
-- [ ] 6.1 Create `client/src/api/dashboard.ts` (`getStudentDashboard`, `getInstructorDashboard`, `getAdminDashboard`), `client/src/api/instructor.ts` (course/module/lesson/question CRUD, `submitForReview`, `submitApplication` multipart), and `client/src/api/admin.ts` (applications list/approve/reject, courses approve/reject, users, document download). Export from `client/src/api/index.ts`.
+- [x] 6.1 Create `client/src/api/dashboard.ts` (`getStudentDashboard`, `getInstructorDashboard`, `getAdminDashboard`), `client/src/api/instructor.ts` (course/module/lesson/question CRUD, `submitForReview`, `submitApplication` multipart), and `client/src/api/admin.ts` (applications list/approve/reject, courses approve/reject, users, document download). Export from `client/src/api/index.ts`.
   - Verify: all modules compile; multipart upload and blob download paths wired.
-- [ ] 6.2 Create the three dashboard screens: `client/src/pages/StudentDashboard.tsx`, `InstructorDashboard.tsx`, `AdminDashboard.tsx` — each renders its role-scoped API data with loading/error/empty states via `useAsyncData`.
+- [x] 6.2 Create the three dashboard screens: `client/src/pages/StudentDashboard.tsx`, `InstructorDashboard.tsx`, `AdminDashboard.tsx` — each renders its role-scoped API data with loading/error/empty states via `useAsyncData`.
   - Verify: student dashboard shows progress/results/recommendations; instructor shows own courses+stats; admin shows platform counts.
-- [ ] 6.3 Create `client/src/pages/InstructorApplication.tsx` — student application form (professional data + credential upload) with upload validation surfaced (allowed type/size). Create the instructor course editor `client/src/pages/CourseEditor.tsx` (create + edit modules/lessons/questions + submit-for-review).
+- [x] 6.3 Create `client/src/pages/InstructorApplication.tsx` — student application form (professional data + credential upload) with upload validation surfaced (allowed type/size). Create the instructor course editor `client/src/pages/CourseEditor.tsx` (create + edit modules/lessons/questions + submit-for-review).
   - Verify: form shows validation errors and does not submit invalid uploads; editor drives CRUD + submit.
-- [ ] 6.4 Create the admin moderation screens: `client/src/pages/AdminApplications.tsx` (application queue approve/reject), `AdminCourses.tsx` (course publish queue approve/reject), `AdminUsers.tsx` (user list), plus admin dashboard navigation.
+- [x] 6.4 Create the admin moderation screens: `client/src/pages/AdminApplications.tsx` (application queue approve/reject), `AdminCourses.tsx` (course publish queue approve/reject), `AdminUsers.tsx` (user list), plus admin dashboard navigation.
   - Verify: pending applications/courses listed; approve/reject calls the admin APIs and reflects status.
-- [ ] 6.5 Modify `client/src/routes/ProtectedRoute.tsx` to accept `roles?: Role[]`: no token → `Navigate to="/login"` (with `state.from`); hydrating → skeleton; token present but role not permitted → `Navigate to="/"`. Wire role-gated routes in `client/src/App.tsx` per the design route map (`/dashboard` STUDENT, `/aplicar-instructor` STUDENT, `/instructor`* INSTRUCTOR, `/admin`* ADMIN, `/perfil` any auth, `/cursos/:slug/examen` any auth).
+- [x] 6.5 Modify `client/src/routes/ProtectedRoute.tsx` to accept `roles?: Role[]`: no token → `Navigate to="/login"` (with `state.from`); hydrating → skeleton; token present but role not permitted → `Navigate to="/"`. Wire role-gated routes in `client/src/App.tsx` per the design route map (`/dashboard` STUDENT, `/aplicar-instructor` STUDENT, `/instructor`* INSTRUCTOR, `/admin`* ADMIN, `/perfil` any auth, `/cursos/:slug/examen` any auth).
   - Verify: unauthenticated → login; wrong role → landing; permitted role renders (lms-frontend role-aware routing scenarios).
 
 ## Phase 7: Polish & Verification
 
-- [ ] 7.1 Delete `client/src/api/mock.ts`; confirm no remaining import or reference in `client/src/` (grep for `mock`); all data-fetching paths use the API client.
+- [x] 7.1 Delete `client/src/api/mock.ts`; confirm no remaining import or reference in `client/src/` (grep for `mock`); all data-fetching paths use the API client.
   - Verify: `rg "mock" client/src` returns nothing; app builds and renders from API.
-- [ ] 7.2 Apply animations/microinteractions and loading/error/empty states consistently: reuse `PageTransition`; ensure every data-fetching screen shows skeleton→content or `ErrorState`/`EmptyState`; verify responsiveness at mobile/tablet/desktop widths.
+- [x] 7.2 Apply animations/microinteractions and loading/error/empty states consistently: reuse `PageTransition`; ensure every data-fetching screen shows skeleton→content or `ErrorState`/`EmptyState`; verify responsiveness at mobile/tablet/desktop widths.
   - Verify: manual review across the screens; no unhandled loading flash; layouts legible at 3 widths.
-- [ ] 7.3 Final contract review of `docs/api-contract.md`: ensure the v2 section is complete and every endpoint implemented in Phases 2–4 is documented; confirm v1 sections are byte-compatible and the `GET /api/users` removal is recorded.
+- [x] 7.3 Final contract review of `docs/api-contract.md`: ensure the v2 section is complete and every endpoint implemented in Phases 2–4 is documented; confirm v1 sections are byte-compatible and the `GET /api/users` removal is recorded.
   - Verify: contract and implementation agree; no v1 shape drift.
-- [ ] 7.4 Full verification pass: `npm run typecheck` in `server/` (after `prisma generate`) and `npm run build` (`tsc -b`) in `client/`; run `npx oxlint` in `client/`. Execute the manual RBAC/password-reset/instructor-lifecycle/document-security checklists from `design.md` §Testing Strategy.
+- [x] 7.4 Full verification pass: `npm run typecheck` in `server/` (after `prisma generate`) and `npm run build` (`tsc -b`) in `client/`; run `npx oxlint` in `client/`. Execute the manual RBAC/password-reset/instructor-lifecycle/document-security checklists from `design.md` §Testing Strategy.
   - Verify: both typechecks pass; oxlint clean; manual checklist items pass end-to-end.
 
 ---
