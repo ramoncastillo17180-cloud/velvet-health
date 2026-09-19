@@ -256,6 +256,15 @@ const courses: SeedCourse[] = [
 ];
 
 async function main(): Promise<void> {
+  // Guard: only seed when the courses table is empty. This keeps the seed
+  // non-destructive when it runs on subsequent deploys (it must never wipe
+  // registered users or their exam results).
+  const existingCourses = await prisma.course.count();
+  if (existingCourses > 0) {
+    console.log("Courses already present — skipping seed.");
+    return;
+  }
+
   console.log("Seeding Velvet Health database...");
 
   // Clear existing data in dependency order for a deterministic, idempotent seed.

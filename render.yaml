@@ -16,9 +16,7 @@ services:
     plan: free
     rootDir: server
     buildCommand: npm install && npx prisma generate && npm run build
-    preDeployCommand: npx prisma db push
-    startCommand: npm start
-    initialDeployHook: npx prisma db seed
+    startCommand: npx prisma db push && npx prisma db seed && npm start
     healthCheckPath: /api/courses
     envVars:
       - key: DATABASE_URL
