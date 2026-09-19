@@ -1,0 +1,49 @@
+schema: spec-driven
+
+context: |
+  Tech stack: monorepo — client/ (React 19 + TypeScript 6 + Vite 8 + Tailwind 4), server/ (Express 5 + TypeScript 5.9 + Prisma 6 + PostgreSQL)
+  Architecture: client-server REST API; Prisma ORM on server; no workspace root package.json (independent client/ and server/ packages)
+  Testing: none detected (no test runner, no coverage, no test layers)
+  Quality: type checking via tsc (both); lint via oxlint (client only); no shared formatter
+
+testing:
+  strict_tdd: false
+  reason: no explicit workspace-level test command covers every in-scope project (no root package.json, no workspace runner); zero test runners detected
+  projects:
+    - path: client
+      stack: React 19 + TypeScript 6 + Vite 8 + Tailwind 4
+      test_command: null
+      framework: null
+      lint: oxlint
+      typecheck: tsc -b
+      formatter: null
+    - path: server
+      stack: Express 5 + TypeScript 5.9 + Prisma 6 + PostgreSQL
+      test_command: null
+      framework: null
+      lint: null
+      typecheck: tsc --noEmit
+      formatter: null
+
+rules:
+  proposal:
+    - Include rollback plan for risky changes
+  specs:
+    - Use Given/When/Then for scenarios
+    - Use RFC 2119 keywords (MUST, SHALL, SHOULD, MAY)
+  design:
+    - Document architecture decisions with rationale
+  tasks:
+    - Group by phase, use hierarchical numbering
+    - Keep tasks completable in one session
+  apply:
+    guidelines:
+      - Follow existing code patterns
+    tdd: false
+    test_command: ""
+  verify:
+    test_command: ""
+    build_command: ""
+    coverage_threshold: 0
+  archive:
+    - Warn before merging destructive deltas
