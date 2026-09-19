@@ -10,16 +10,40 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Role {
+  STUDENT
+  INSTRUCTOR
+  ADMIN
+}
+
+enum CourseStatus {
+  DRAFT
+  PENDING
+  PUBLISHED
+}
+
+enum InstructorApplicationStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
 model User {
-  id          Int          @id @default(autoincrement())
-  nombre      String
-  apellidos   String
-  profesion   String?
-  edad        Int?
-  correo      String       @unique
-  contraseña  String
-  examResults ExamResult[]
-  createdAt   DateTime     @default(now())
+  id                     Int                       @id @default(autoincrement())
+  nombre                 String
+  apellidos              String
+  profesion              String?
+  edad                   Int?
+  correo                 String                    @unique
+  contraseña             String
+  role                   Role                      @default(STUDENT)
+  tokenVersion           Int                       @default(0)
+  examResults            ExamResult[]
+  instructorApplications InstructorApplication[]
+  coursesCreated         Course[]
+  passwordResetTokens    PasswordResetToken[]
+  reviewedApplications   InstructorApplication[]   @relation("ReviewedApplications")
+  createdAt              DateTime                  @default(now())
 }
 
 model Course {
@@ -30,8 +54,77 @@ model Course {
   minutes       Int
   image         String
   passThreshold Int          @default(70)
+  status        CourseStatus @default(PUBLISHED)
+  createdById   Int?
+  createdBy     User?        @relation(fields: [createdById], references: [id], onDelete: SetNull)
+  modules       Module[]
   questions     Question[]
   examResults   ExamResult[]
+}
+
+model Module {
+  id          Int      @id @default(autoincrement())
+  courseId    Int
+  course      Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  title       String
+  description String   @default("")
+  order       Int
+  lessons     Lesson[]
+
+  @@index([courseId, order])
+}
+
+model Lesson {
+  id              Int     @id @default(autoincrement())
+  moduleId        Int
+  module          Module  @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  title           String
+  content         String
+  order           Int
+  durationMinutes Int?
+
+  @@index([moduleId, order])
+}
+
+model InstructorApplication {
+  id           Int                         @id @default(autoincrement())
+  userId       Int
+  user         User                        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  status       InstructorApplicationStatus @default(PENDING)
+  reviewNotes  String?
+  reviewedById Int?
+  reviewedBy   User?                       @relation("ReviewedApplications", fields: [reviewedById], references: [id], onDelete: SetNull)
+  reviewedAt   DateTime?
+  documents    Document[]
+  createdAt    DateTime                    @default(now())
+
+  @@index([status])
+  @@index([userId])
+}
+
+model Document {
+  id            Int                   @id @default(autoincrement())
+  applicationId Int
+  application   InstructorApplication @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  fileName      String
+  storagePath   String                @unique
+  mimeType      String
+  sizeBytes     Int
+  uploadedAt    DateTime              @default(now())
+
+  @@index([applicationId])
+}
+
+model PasswordResetToken {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash String   @unique
+  expiresAt DateTime
+  consumed  Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([userId])
 }
 
 model Question {
