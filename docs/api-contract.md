@@ -280,3 +280,185 @@ characters (the token is NOT consumed on a weak password).
 `GET /api/courses` and `GET /api/courses/:slug` filter to `status = PUBLISHED`.
 Draft/pending courses are omitted from the catalog and return `404` on direct
 lookup.
+
+### `GET /api/courses` (PUBLISHED only)
+
+Catalog now returns only `PUBLISHED` courses (v1 shape unchanged otherwise):
+
+```json
+{ "courses": [ { "id": 1, "slug": "rcp", "title": "...", "description": "...", "minutes": 20, "image": "reanimacion.png", "passThreshold": 70 } ] }
+```
+
+### `GET /api/courses/:slug` (PUBLISHED only, + `modules`)
+
+Returns `404` for a `DRAFT`, `PENDING`, or unknown course. A published course
+gains structured `modules` **and** keeps the legacy flattened `instructions`
+array (derived from lesson content):
+
+```json
+{
+  "course": {
+    "id": 1, "slug": "rcp", "title": "...", "description": "...",
+    "minutes": 20, "image": "reanimacion.png", "passThreshold": 70,
+    "instructions": [ "..." ],
+    "modules": [
+      { "id": 1, "title": "Contenido del curso", "description": "", "order": 1,
+        "lessons": [ { "id": 1, "title": "Paso 1", "content": "...", "order": 1, "durationMinutes": null } ] }
+    ]
+  }
+}
+```
+
+### `GET /api/courses/:slug/lessons` (NEW)
+
+Returns only the structured lesson content of a `PUBLISHED` course (`404`
+otherwise):
+
+```json
+{
+  "modules": [
+    { "id": 1, "title": "Contenido del curso", "description": "", "order": 1,
+      "lessons": [ { "id": 1, "title": "Paso 1", "content": "...", "order": 1, "durationMinutes": null } ] }
+  ]
+}
+```
+
+### `GET /api/courses/:slug/exam` + `POST /api/courses/:slug/exam/submit` (PUBLISHED only)
+
+Both now return `404` for a non-`PUBLISHED` course. The public exam response
+still omits `isCorrect`; grading is unchanged.
+
+---
+
+# API Contract v2 — Instructor + Admin + Documents
+
+> Phase 3 (content model + CRUD + approval). Instructor endpoints are authorized
+> for `INSTRUCTOR` and `ADMIN`; admin endpoints for `ADMIN` only; the single
+> instructor-application carve-out is documented below.
+
+## Instructor (role `INSTRUCTOR` or `ADMIN`)
+
+All routes require `Authorization: Bearer <token>`. A `STUDENT` receives `403`.
+
+### `POST /api/instructor/applications` (canonical, multipart)
+
+The **one carve-out** on `/api/instructor/*`: authorized for `STUDENT` and
+`INSTRUCTOR` (an `ADMIN` receives `403`). A `STUDENT` applies and, after a
+rejection, re-applies through this same endpoint. `POST /api/instructor/apply`
+is **superseded and not implemented**.
+
+Request: `multipart/form-data`.
+
+| Field | Type | Required |
+| --- | --- | --- |
+| `profesion` | string | yes |
+| `edad` | number (parsed from string) | no |
+| `documents` | file(s) — `application/pdf`, `image/jpeg`, `image/png` | no (0..N) |
+
+Response `201`:
+
+```json
+{ "application": { "id": 3, "status": "PENDING", "createdAt": "ISO" } }
+```
+
+Errors: `403` (ADMIN), `409` (existing `PENDING` application, or terminal
+`APPROVED`/caller is `INSTRUCTOR`), `400` (invalid file type or oversized upload
+> `MAX_UPLOAD_BYTES`, default 5 MB).
+
+### Instructor course CRUD
+
+| Method & Path | Notes |
+| --- | --- |
+| `GET /api/instructor/courses` | own courses, all statuses |
+| `POST /api/instructor/courses` | create → `status = DRAFT`, `slug` server-generated |
+| `GET /api/instructor/courses/:id` | own course with modules+lessons+questions |
+| `PUT /api/instructor/courses/:id` | update own |
+| `DELETE /api/instructor/courses/:id` | delete own |
+| `POST /api/instructor/courses/:id/modules` | create module |
+| `PUT /api/instructor/courses/:id/modules/:moduleId` | update module |
+| `DELETE /api/instructor/courses/:id/modules/:moduleId` | delete module |
+| `POST /api/instructor/courses/:id/modules/:moduleId/lessons` | create lesson |
+| `PUT /api/instructor/courses/:id/modules/:moduleId/lessons/:lessonId` | update lesson |
+| `DELETE /api/instructor/courses/:id/modules/:moduleId/lessons/:lessonId` | delete lesson |
+| `POST /api/instructor/courses/:id/questions` | create question + options |
+| `PUT /api/instructor/courses/:id/questions/:questionId` | update question + options (replaces options) |
+| `DELETE /api/instructor/courses/:id/questions/:questionId` | delete question |
+| `POST /api/instructor/courses/:id/submit` | request publish (`DRAFT` → `PENDING`) |
+
+Ownership is enforced server-side: updating or deleting a course the caller does
+not own returns `403`. Deleting a resource returns `204`.
+
+**`POST /api/instructor/courses`** — request:
+
+```json
+{ "title": "string", "description": "string", "minutes": 30, "image": "string", "passThreshold": 70, "slug": "optional" }
+```
+
+Response `201` (slug is server-generated from `title` when `slug` is omitted,
+slugified + suffix on collision):
+
+```json
+{ "course": { "id": 10, "slug": "mi-curso", "title": "...", "status": "DRAFT", "createdById": 2 } }
+```
+
+**`POST /api/instructor/courses/:id/questions`** — request (exactly one option
+`isCorrect: true`, at least two options):
+
+```json
+{ "prompt": "string", "order": 1, "options": [ { "text": "string", "isCorrect": true }, { "text": "string", "isCorrect": false } ] }
+```
+
+**`POST /api/instructor/courses/:id/submit`** — no body. Response `200`
+`{ "course": { "id": 10, "status": "PENDING" } }`; `409` if not `DRAFT`.
+
+## Admin (role `ADMIN` only)
+
+All routes require `Authorization: Bearer <token>`. `STUDENT`/`INSTRUCTOR`
+receive `403`.
+
+### `GET /api/admin/instructor-applications?status=`
+
+List/filter applications (`status` ∈ `PENDING` | `APPROVED` | `REJECTED`;
+omitted → all). Includes applicant identity and document metadata, never
+document binary content.
+
+```json
+{
+  "applications": [
+    { "id": 1, "status": "PENDING", "createdAt": "ISO",
+      "applicant": { "id": 5, "nombre": "...", "apellidos": "...", "correo": "...", "profesion": "Médico", "edad": 30 },
+      "documents": [ { "id": 3, "fileName": "titulo.pdf", "mimeType": "application/pdf", "sizeBytes": 512000, "uploadedAt": "ISO" } ],
+      "reviewedAt": null, "reviewNotes": null } ]
+}
+```
+
+### `POST /api/admin/instructor-applications/:id/approve`
+
+Request `{ "reviewNotes": "optional" }`. On `PENDING`: `status = APPROVED`,
+applicant `role → INSTRUCTOR`, reviewer + `reviewNotes` recorded. Response `200`
+`{ "application": { "id": 1, "status": "APPROVED", "reviewedAt": "ISO" } }`.
+`409` if not `PENDING`.
+
+### `POST /api/admin/instructor-applications/:id/reject`
+
+Request `{ "reviewNotes": "required" }`. On `PENDING`: `status = REJECTED`, role
+stays `STUDENT`, reviewer + `reviewNotes` recorded. Response `200`
+`{ "application": { "id": 1, "status": "REJECTED" } }`. `400` if `reviewNotes`
+missing; `409` if not `PENDING`.
+
+### `GET /api/admin/courses?status=PENDING`
+
+Course moderation queue (defaults to `PENDING`; `status` may also be `DRAFT` or
+`PUBLISHED`). Returns courses with owner metadata.
+
+### `POST /api/admin/courses/:id/approve` / `reject`
+
+No body. `approve`: `PENDING` → `PUBLISHED`; `reject`: `PENDING` → `DRAFT`.
+Response `200` `{ "course": { "id": 10, "status": "PUBLISHED" } }` (or
+`"DRAFT"`). `409` if not `PENDING`.
+
+### `GET /api/admin/documents/:id` (binary)
+
+Streams a credential document with `Content-Type: <stored mimeType>` and
+`Content-Disposition: attachment; filename="<fileName>"`. `404` missing;
+`403` non-admin; `401` unauthenticated. There is no public URL for any document.
