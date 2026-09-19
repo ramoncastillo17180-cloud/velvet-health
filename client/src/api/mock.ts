@@ -104,9 +104,9 @@ const instructionsBySlug: Record<string, string[]> = {
 }
 
 export const mockCourseDetails: Record<string, CourseDetail> = {
-  rcp: { ...mockCourses[0], instructions: instructionsBySlug.rcp },
-  hemorragias: { ...mockCourses[1], instructions: instructionsBySlug.hemorragias },
-  heimlich: { ...mockCourses[2], instructions: instructionsBySlug.heimlich },
+  rcp: { ...mockCourses[0], instructions: instructionsBySlug.rcp, modules: [] },
+  hemorragias: { ...mockCourses[1], instructions: instructionsBySlug.hemorragias, modules: [] },
+  heimlich: { ...mockCourses[2], instructions: instructionsBySlug.heimlich, modules: [] },
 }
 
 // ------------------------------------------------------------
@@ -364,7 +364,7 @@ export function mockSubmitExam(
 
 export function mockLogin(payload: LoginPayload): LoginResponse {
   const nombre = deriveName(payload.correo)
-  const user: AuthUser = { id: 1, nombre, correo: payload.correo }
+  const user: AuthUser = { id: 1, nombre, correo: payload.correo, role: 'STUDENT' }
   localStorage.setItem(MOCK_USER_KEY, JSON.stringify(user))
   return { token: 'mock-token', user }
 }
@@ -377,6 +377,7 @@ export function mockRegister(payload: RegisterPayload): User {
     profesion: payload.profesion,
     edad: payload.edad,
     correo: payload.correo,
+    role: 'STUDENT',
     createdAt: new Date().toISOString(),
   }
 }
@@ -387,6 +388,7 @@ export function mockGetMe(): AuthUser {
       id: 1,
       nombre: 'Usuario Demo',
       correo: 'demo@velvet.health',
+      role: 'STUDENT',
     }
   )
 }

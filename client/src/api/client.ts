@@ -109,3 +109,83 @@ export async function apiFetch<T>(
 export function isNetworkError(error: unknown): error is NetworkError {
   return error instanceof NetworkError
 }
+
+/**
+ * Multipart upload helper. Sends a FormData body as `POST` and attaches the
+ * JWT bearer token. The browser sets the `Content-Type` boundary itself, so we
+ * never set it manually here.
+ */
+export async function apiUpload<T>(path: string, formData: FormData): Promise<T> {
+  const headers: Record<string, string> = {}
+  const token = getToken()
+  if (token) headers.Authorization = `Bearer ${token}`
+
+  let res: Response
+  try {
+    res = await fetch(`${BASE_URL}${path}`, {
+      method: 'POST',
+      headers,
+      body: formData,
+    })
+  } catch {
+    throw new NetworkError()
+  }
+
+  if (res.status === 204) {
+    return undefined as T
+  }
+
+  const data = (await parseBody(res)) as ApiErrorBody | T | null
+
+  if (!res.ok) {
+    const err = data as ApiErrorBody | null
+    throw new ApiError(
+      res.status,
+      err?.error?.code ?? 'UNKNOWN_ERROR',
+      err?.error?.message ?? 'Error del servidor',
+    )
+  }
+
+  return data as T
+}
+
+/**
+ * Downloads a binary resource (e.g. an admin document) as a Blob and triggers
+ * a client-side download. The filename is read from `Content-Disposition` and
+ * falls back to the provided name.
+ */
+export async function apiDownload(path: string, fallbackName = 'documento'): Promise<void> {
+  const headers: Record<string, string> = {}
+  const token = getToken()
+  if (token) headers.Authorization = `Bearer ${token}`
+
+  let res: Response
+  try {
+    res = await fetch(`${BASE_URL}${path}`, { headers })
+  } catch {
+    throw new NetworkError()
+  }
+
+  if (!res.ok) {
+    const data = (await parseBody(res)) as ApiErrorBody | null
+    throw new ApiError(
+      res.status,
+      data?.error?.code ?? 'UNKNOWN_ERROR',
+      data?.error?.message ?? 'Error al descargar el documento',
+    )
+  }
+
+  const blob = await res.blob()
+  const disposition = res.headers.get('Content-Disposition') ?? ''
+  const match = /filename="?([^";]+)"?/i.exec(disposition)
+  const fileName = match?.[1] ?? fallbackName
+
+  const url = URL.createObjectURL(blob)
+  const anchor = document.createElement('a')
+  anchor.href = url
+  anchor.download = fileName
+  document.body.appendChild(anchor)
+  anchor.click()
+  anchor.remove()
+  URL.revokeObjectURL(url)
+}
