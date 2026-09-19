@@ -428,7 +428,7 @@ document binary content.
     { "id": 1, "status": "PENDING", "createdAt": "ISO",
       "applicant": { "id": 5, "nombre": "...", "apellidos": "...", "correo": "...", "profesion": "Médico", "edad": 30 },
       "documents": [ { "id": 3, "fileName": "titulo.pdf", "mimeType": "application/pdf", "sizeBytes": 512000, "uploadedAt": "ISO" } ],
-      "reviewedAt": null, "reviewNotes": null } ]
+      "reviewedBy": null, "reviewedAt": null, "reviewNotes": null } ]
 }
 ```
 
