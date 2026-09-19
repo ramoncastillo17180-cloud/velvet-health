@@ -1,0 +1,63 @@
+// Velvet Health — Prisma schema (PostgreSQL)
+// Field names mirror the frozen API contract (Spanish domain terms).
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          Int          @id @default(autoincrement())
+  nombre      String
+  apellidos   String
+  profesion   String?
+  edad        Int?
+  correo      String       @unique
+  contraseña  String
+  examResults ExamResult[]
+  createdAt   DateTime     @default(now())
+}
+
+model Course {
+  id            Int          @id @default(autoincrement())
+  slug          String       @unique
+  title         String
+  description   String
+  minutes       Int
+  image         String
+  passThreshold Int          @default(70)
+  questions     Question[]
+  examResults   ExamResult[]
+}
+
+model Question {
+  id       Int      @id @default(autoincrement())
+  courseId Int
+  course   Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  prompt   String
+  order    Int
+  options  Option[]
+}
+
+model Option {
+  id         Int      @id @default(autoincrement())
+  questionId Int
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  text       String
+  isCorrect  Boolean
+}
+
+model ExamResult {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  courseId  Int
+  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  score     Int
+  passed    Boolean
+  createdAt DateTime @default(now())
+}
