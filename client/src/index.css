@@ -24,6 +24,17 @@
   /* Surfaces */
   --color-surface: #f6faf8;
 
+  /* Status colors (courses + instructor applications) */
+  --color-draft: #94a3b8;
+  --color-pending: #f59e0b;
+  --color-published: #16a34a;
+  --color-rejected: #ef4444;
+  --color-approved: #0ea5e9;
+
+  /* Feedback colors */
+  --color-danger: #dc2626;
+  --color-muted: #6b7280;
+
   /* Typography */
   --font-sans: "Montserrat", ui-sans-serif, system-ui, sans-serif;
   --font-display: "Playfair Display", Georgia, serif;
@@ -95,6 +106,15 @@
   .field-input {
     @apply w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-base text-gray-800 outline-none transition placeholder:text-gray-400 focus:border-accent focus:ring-4 focus:ring-accent/15;
   }
+
+  /* Role + status badges (color applied in the component via token utilities) */
+  .badge-role {
+    @apply inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wide;
+  }
+
+  .badge-status {
+    @apply inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wide;
+  }
 }
 
 @layer utilities {
@@ -102,4 +122,48 @@
   .focus-ring {
     @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2;
   }
+}
+
+/* ------------------------------------------------------------
+   Skeleton shimmer
+   ------------------------------------------------------------ */
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.skeleton,
+.skeleton-card,
+.skeleton-row {
+  position: relative;
+  overflow: hidden;
+  background-color: rgba(209, 213, 219, 0.55);
+  background-image: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.55) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.6s linear infinite;
+}
+
+.skeleton {
+  border-radius: 6px;
+}
+
+.skeleton-card {
+  border-radius: var(--radius-card);
+  min-height: 12rem;
+}
+
+.skeleton-row {
+  border-radius: 6px;
+  height: 1rem;
+  width: 100%;
 }
