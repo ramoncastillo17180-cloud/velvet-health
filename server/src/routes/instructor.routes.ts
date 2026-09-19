@@ -20,6 +20,7 @@ import {
   deleteQuestion,
   submitForReview,
   submitInstructorApplication,
+  getInstructorDashboard,
 } from "../controllers/instructor.controller";
 
 export const instructorRouter = Router();
@@ -39,6 +40,7 @@ instructorRouter.post(
 // Everything else under `/api/instructor/*` is INSTRUCTOR + ADMIN only.
 instructorRouter.use(requireAuth, requireRole("INSTRUCTOR", "ADMIN"));
 
+instructorRouter.get("/dashboard", asyncHandler(getInstructorDashboard));
 instructorRouter.get("/courses", asyncHandler(listInstructorCourses));
 instructorRouter.post("/courses", asyncHandler(createCourse));
 instructorRouter.get("/courses/:id", asyncHandler(getInstructorCourse));

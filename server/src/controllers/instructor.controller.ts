@@ -521,3 +521,83 @@ export async function submitInstructorApplication(
     },
   });
 }
+
+// ---- Instructor dashboard ----
+
+export async function getInstructorDashboard(
+  req: Request,
+  res: Response,
+): Promise<void> {
+  const userId = authenticatedUserId(req);
+
+  const [user, courses] = await Promise.all([
+    prisma.user.findUnique({
+      where: { id: userId },
+      select: { id: true, nombre: true, role: true },
+    }),
+    prisma.course.findMany({
+      where: { createdById: userId },
+      orderBy: { id: "desc" },
+      select: {
+        id: true,
+        slug: true,
+        title: true,
+        status: true,
+        minutes: true,
+      },
+    }),
+  ]);
+
+  if (!user) {
+    throw new HttpError(401, "UNAUTHORIZED", "Usuario no encontrado");
+  }
+
+  // Aggregate enrollment across the instructor's courses. `studentsCount` is the
+  // number of distinct students with a result in a course; `totalStudents` is the
+  // distinct students across all owned courses; `totalResults` is the raw result
+  // count.
+  const courseIds = courses.map((course) => course.id);
+  const results =
+    courseIds.length === 0
+      ? []
+      : await prisma.examResult.findMany({
+          where: { courseId: { in: courseIds } },
+          select: { userId: true, courseId: true },
+        });
+
+  const studentsByCourse = new Map<number, Set<number>>();
+  const allStudents = new Set<number>();
+  for (const result of results) {
+    let courseStudents = studentsByCourse.get(result.courseId);
+    if (!courseStudents) {
+      courseStudents = new Set();
+      studentsByCourse.set(result.courseId, courseStudents);
+    }
+    courseStudents.add(result.userId);
+    allStudents.add(result.userId);
+  }
+
+  const stats = {
+    totalCourses: courses.length,
+    draft: courses.filter((course) => course.status === "DRAFT").length,
+    pending: courses.filter((course) => course.status === "PENDING").length,
+    published: courses.filter((course) => course.status === "PUBLISHED").length,
+    totalStudents: allStudents.size,
+    totalResults: results.length,
+  };
+
+  res.json({
+    dashboard: {
+      instructor: { id: user.id, nombre: user.nombre, role: user.role },
+      stats,
+      courses: courses.map((course) => ({
+        id: course.id,
+        slug: course.slug,
+        title: course.title,
+        status: course.status,
+        minutes: course.minutes,
+        studentsCount: studentsByCourse.get(course.id)?.size ?? 0,
+      })),
+    },
+  });
+}

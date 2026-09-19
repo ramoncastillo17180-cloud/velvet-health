@@ -9,13 +9,18 @@ import {
   listAdminCourses,
   approveCourse,
   rejectCourse,
+  getAdminDashboard,
 } from "../controllers/admin.controller";
+import { listUsers } from "../controllers/user.controller";
 import { downloadDocument } from "../controllers/document.controller";
 
 export const adminRouter = Router();
 
 // Every route under `/api/admin/*` is ADMIN-only.
 adminRouter.use(requireAuth, requireRole("ADMIN"));
+
+adminRouter.get("/dashboard", asyncHandler(getAdminDashboard));
+adminRouter.get("/users", asyncHandler(listUsers));
 
 adminRouter.get(
   "/instructor-applications",

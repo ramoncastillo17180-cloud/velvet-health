@@ -211,3 +211,51 @@ export async function rejectCourse(
 
   res.json({ course: { id: updated.id, status: updated.status } });
 }
+
+// ---- Admin dashboard ----
+
+export async function getAdminDashboard(
+  _req: Request,
+  res: Response,
+): Promise<void> {
+  const [
+    users,
+    students,
+    instructors,
+    admins,
+    courses,
+    publishedCourses,
+    pendingCourses,
+    applications,
+    pendingApplications,
+    results,
+  ] = await Promise.all([
+    prisma.user.count(),
+    prisma.user.count({ where: { role: "STUDENT" } }),
+    prisma.user.count({ where: { role: "INSTRUCTOR" } }),
+    prisma.user.count({ where: { role: "ADMIN" } }),
+    prisma.course.count(),
+    prisma.course.count({ where: { status: "PUBLISHED" } }),
+    prisma.course.count({ where: { status: "PENDING" } }),
+    prisma.instructorApplication.count(),
+    prisma.instructorApplication.count({ where: { status: "PENDING" } }),
+    prisma.examResult.count(),
+  ]);
+
+  res.json({
+    dashboard: {
+      counts: {
+        users,
+        students,
+        instructors,
+        admins,
+        courses,
+        publishedCourses,
+        pendingCourses,
+        applications,
+        pendingApplications,
+        results,
+      },
+    },
+  });
+}
