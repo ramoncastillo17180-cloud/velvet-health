@@ -1,0 +1,13 @@
+{
+  "framework": "vite",
+  "installCommand": "cd client && npm install",
+  "buildCommand": "cd client && npm run build",
+  "outputDirectory": "client/dist",
+  "env": {
+    "VITE_API_URL": "https://velvet-api-u3z6.onrender.com/api"
+  },
+  "routes": [
+    { "handle": "filesystem" },
+    { "src": "/(.*)", "dest": "/index.html" }
+  ]
+}
