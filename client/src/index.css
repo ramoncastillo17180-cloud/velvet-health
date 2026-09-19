@@ -1,0 +1,99 @@
+@import "tailwindcss";
+
+/* ============================================================
+   Velvet Health — Design System (Tailwind v4 theme tokens)
+   ============================================================ */
+
+@theme {
+  /* Brand — medical green palette */
+  --color-primary: #2b8b61;
+  --color-accent: #3cb371;
+  --color-accent-hover: #2a9659;
+  --color-success: #4caf50;
+
+  /* Light greens (decorative squares, badges, highlights) */
+  --color-green-50: #e8f5e9;
+  --color-green-100: #b7e4c7;
+  --color-green-200: #a4e6b5;
+  --color-green-300: #9bd0a9;
+  --color-green-400: #83d495;
+  --color-green-500: #72c084;
+  --color-green-selected: #d1f5df;
+
+  /* Surfaces */
+  --color-surface: #f5f5f5;
+
+  /* Typography */
+  --font-sans: "Montserrat", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Playfair Display", Georgia, serif;
+
+  /* Radii — soft cards (14–16px) */
+  --radius-card: 14px;
+  --radius-card-lg: 16px;
+
+  /* Shadows — soft */
+  --shadow-card: 0 6px 20px rgba(0, 0, 0, 0.08);
+  --shadow-card-hover: 0 8px 20px rgba(0, 0, 0, 0.08);
+  --shadow-header: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply font-sans bg-surface text-gray-800 antialiased;
+    min-height: 100vh;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-display;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-[10px] bg-accent px-6 py-3 font-semibold text-white transition-colors hover:bg-accent-hover disabled:cursor-not-allowed disabled:opacity-60;
+  }
+
+  .btn-outline {
+    @apply inline-flex items-center justify-center gap-2 rounded-[10px] border-2 border-accent bg-white px-6 py-3 font-semibold text-accent transition-colors hover:bg-gray-50;
+  }
+
+  .btn-light {
+    @apply inline-flex items-center justify-center gap-2 rounded-[10px] bg-green-100 px-8 py-4 text-lg font-bold text-gray-800 shadow-sm transition hover:bg-green-300;
+  }
+
+  .btn-pill-primary {
+    @apply block w-full rounded-full bg-accent px-4 py-2.5 font-semibold text-white transition-colors hover:bg-accent-hover;
+  }
+
+  .btn-pill-outline {
+    @apply block w-full rounded-full border-2 border-accent bg-white px-4 py-2.5 font-semibold text-accent transition-colors hover:bg-gray-50;
+  }
+
+  .card {
+    @apply rounded-card bg-white shadow-card;
+  }
+
+  .field-label {
+    @apply mb-1 block text-left text-sm font-semibold text-primary;
+  }
+
+  .field-input {
+    @apply w-full rounded-[10px] border border-gray-300 bg-white px-4 py-3 text-base text-gray-800 outline-none transition placeholder:text-gray-400 focus:border-primary focus:ring-2 focus:ring-primary/30;
+  }
+}
+
+@layer utilities {
+  /* Accessible focus ring using the brand color */
+  .focus-ring {
+    @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2;
+  }
+}
