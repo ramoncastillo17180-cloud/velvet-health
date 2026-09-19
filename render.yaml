@@ -34,4 +34,4 @@ services:
     staticPublishPath: client/dist
     envVars:
       - key: VITE_API_URL
-        value: https://velvet-api.onrender.com/api
+        value: https://velvet-api-u3z6.onrender.com/api
