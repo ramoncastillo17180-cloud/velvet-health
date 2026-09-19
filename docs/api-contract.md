@@ -178,3 +178,105 @@ type ExamResult = { id: number; courseId: number; courseSlug: string; score: num
 - IDs are integers (Prisma autoincrement).
 - Course `slug` values are fixed: `rcp`, `hemorragias`, `heimlich`.
 - The frontend must never receive the correct-answer flag (`isCorrect`).
+
+---
+
+# API Contract v2 (additive)
+
+> Phase 2 (auth + RBAC + password reset). Every v1 endpoint shape above remains
+> byte-compatible; `role` is the only field added to existing user payloads.
+
+## Roles
+
+`role` is one of `STUDENT | INSTRUCTOR | ADMIN`. Registration always creates a
+`STUDENT`; any client-supplied `role` is ignored. The JWT payload is
+`{ sub, role, ver }` (subject id, current role, token version). A password reset
+bumps `ver`, invalidating previously issued tokens.
+
+## Error format (one new code)
+
+```json
+{ "error": { "code": "FORBIDDEN", "message": "..." } }
+```
+
+| Code | Status | Meaning |
+| --- | --- | --- |
+| `VALIDATION_ERROR` | 400 | Malformed body / invalid upload type or size |
+| `UNAUTHORIZED` | 401 | Missing/invalid/expired token, or invalidated session |
+| `FORBIDDEN` | 403 | Authenticated but role not permitted |
+| `NOT_FOUND` | 404 | Resource missing or not visible to the role |
+| `CONFLICT` | 409 | Duplicate / invalid state transition |
+| `INTERNAL_ERROR` | 500 | Server error |
+
+## Auth (public + authenticated)
+
+### `POST /api/auth/register` (v1 shape + `role`)
+
+The response now includes `role` (always `STUDENT`):
+
+```json
+{ "user": { "id": 1, "nombre": "...", "apellidos": "...", "profesion": null, "edad": null, "correo": "...", "role": "STUDENT", "createdAt": "ISO" } }
+```
+
+A client-supplied `role` field is ignored.
+
+### `POST /api/auth/login` (v1 shape + `role`)
+
+The JWT now carries `{ sub, role, ver }` (expires in `JWT_EXPIRES_IN`, default `7d`):
+
+```json
+{ "token": "jwt", "user": { "id": 1, "nombre": "...", "correo": "...", "role": "STUDENT" } }
+```
+
+### `POST /api/auth/logout` (unchanged)
+
+Response `204` (stateless; client discards the token).
+
+### `GET /api/auth/me` (full identity + `role`)
+
+Header: `Authorization: Bearer <token>`. Response `200`:
+
+```json
+{ "user": { "id": 1, "nombre": "...", "apellidos": "...", "profesion": null, "edad": null, "correo": "...", "role": "STUDENT" } }
+```
+
+### `POST /api/auth/forgot-password` (NEW)
+
+Request:
+
+```json
+{ "correo": "string" }
+```
+
+Response `200` (always — enumeration-safe):
+
+```json
+{ "message": "Si el correo existe, recibirás instrucciones" }
+```
+
+For an existing user, a single-use, SHA-256-hashed reset token (15-minute TTL)
+is created and delivered via `EMAIL_MODE` (`console` in dev logs it; `smtp` in
+prod sends email).
+
+### `POST /api/auth/reset-password` (NEW)
+
+Request:
+
+```json
+{ "token": "string", "contraseña": "string (min 8)" }
+```
+
+Response `200`:
+
+```json
+{ "message": "Contraseña actualizada" }
+```
+
+Errors: `400` on invalid/expired/consumed token or a password shorter than 8
+characters (the token is NOT consumed on a weak password).
+
+## Courses (public)
+
+`GET /api/courses` and `GET /api/courses/:slug` filter to `status = PUBLISHED`.
+Draft/pending courses are omitted from the catalog and return `404` on direct
+lookup.
