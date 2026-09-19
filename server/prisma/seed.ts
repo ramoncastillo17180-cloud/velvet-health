@@ -1,4 +1,5 @@
-import { PrismaClient } from "@prisma/client";
+import { CourseStatus, PrismaClient } from "@prisma/client";
+import { courseInstructions } from "../src/data/courseInstructions";
 
 const prisma = new PrismaClient();
 
@@ -275,6 +276,11 @@ async function main(): Promise<void> {
   await prisma.user.deleteMany();
 
   for (const course of courses) {
+    // Legacy courses have no owner (createdById = null) and are immediately
+    // published. Their instruction steps are re-seeded as a single ordered
+    // module with one lesson per step, preserving the original content.
+    const instructions = courseInstructions[course.slug] ?? [];
+
     await prisma.course.create({
       data: {
         slug: course.slug,
@@ -283,6 +289,24 @@ async function main(): Promise<void> {
         minutes: course.minutes,
         image: course.image,
         passThreshold: course.passThreshold,
+        status: CourseStatus.PUBLISHED,
+        createdById: null,
+        modules: {
+          create: [
+            {
+              title: "Contenido del curso",
+              description: "",
+              order: 1,
+              lessons: {
+                create: instructions.map((content, index) => ({
+                  title: `Paso ${index + 1}`,
+                  content,
+                  order: index + 1,
+                })),
+              },
+            },
+          ],
+        },
         questions: {
           create: course.questions.map((question) => ({
             prompt: question.prompt,
