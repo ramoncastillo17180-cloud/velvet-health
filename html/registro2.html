@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Registro - Velvet Health</title>
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f5f5f5;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .form-container {
+      background-color: white;
+      padding: 2.5rem 2rem;
+      border-radius: 16px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+    }
+
+    .form-container h2 {
+      color: #2b8b61;
+      margin-bottom: 1.8rem;
+    }
+
+    label {
+      display: block;
+      text-align: left;
+      margin-bottom: 0.3rem;
+      font-weight: 600;
+      color: #2b8b61;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 0.9rem 1rem;
+      margin-bottom: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      font-size: 1rem;
+    }
+
+    button {
+      width: 100%;
+      padding: 0.9rem 1rem;
+      background-color: #3cb371;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #2a9659;
+    }
+
+    .switch {
+      margin-top: 1rem;
+      font-size: 0.95rem;
+      color: #555;
+    }
+
+    .switch a {
+      color: #2b8b61;
+      text-decoration: none;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <div class="form-container">
+    <h2>Registro Velvet Health</h2>
+    <form id="registroForm" action="crear_cuenta.php" method="POST">
+      <label for="nombre">Nombre:</label>
+      <input type="text" id="nombre" name="nombre" required placeholder="Tu nombre" />
+
+      <label for="apellidos">Apellidos:</label>
+      <input type="text" id="apellidos" name="apellidos" required placeholder="Tus apellidos" />
+
+      <label for="profesion">Profesión:</label>
+      <input type="text" id="profesion" name="profesion" placeholder="Tu profesión" />
+
+      <label for="edad">Edad:</label>
+      <input type="number" id="edad" name="edad" min="1" max="120" placeholder="Tu edad" />
+
+      <label for="correo">Correo electrónico:</label>
+      <input type="email" id="correo" name="correo" required placeholder="tu@correo.com" />
+
+      <label for="contraseña">Contraseña:</label>
+      <input type="password" id="contraseña" name="contraseña" required placeholder="Contraseña" />
+
+      <button type="submit">Registrarse</button>
+    </form>
+
+    <div class="switch">
+      ¿Ya tienes cuenta? <a href="login.html">Inicia sesión</a>
+    </div>
+  </div>
+</body>
+</html>

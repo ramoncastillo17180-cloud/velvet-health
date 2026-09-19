@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <script defer src="/js/script.js"></script>
+  <title>Velvet Health - Cursos</title>
+ 
+  <link rel="stylesheet" href="/css/practicas.css">
+
+</head>
+<body>
+
+
+
+  <header class="main-header">
+         <div class="header-decoration">
+                <div class="square33 square12"></div>
+                <div class="square33 square22"></div>
+                <div class="square33 square32"></div>
+                <div class="square33 square42"></div>
+            </div>
+
+        <div class="header-center-logo">
+       <a href="/html/index.html">
+       <img src="/img/logo2.png" alt="Health Logo" class="health-icon"></a> 
+        </div>
+       
+        <div class="profile-dropdown">
+      <button class="profile-btn" onclick="toggleDropdown()">
+        <svg width="45" height="45" viewBox="0 0 24 24" fill="none">
+          <circle cx="12" cy="8" r="4" stroke="black" stroke-width="2"/>
+          <path d="M4 20c0-4 4-6 8-6s8 2 8 6" stroke="black" stroke-width="2"/>
+        </svg>
+      </button>
+      <div class="dropdown-menu" id="dropdownMenu">
+        <a href="login.html" class="dropdown-btn primary">Iniciar sesión</a>
+        <a href="registro.html" class="dropdown-btn secondary">Registrarse</a>
+      </div>
+    </div>
+    </header>
+
+
+
+
+
+
+
+  
+    <section class="filter-bar">
+      <h2>Cursos</h2>
+    </section>
+<main>
+    <section class="courses">
+      <div class="course-card">
+        <img src="/img/reanimacion.png" alt="Reanimación Cardiopulmonar">
+        <h3>Reanimación Cardiopulmonar</h3>
+        <p class="duration">20 Minutos</p>
+        <p class="desc">Útil en Paro cardiaco y respiratorio.</p>
+        <a  href="/html/curso1.html" class="start-button" >Iniciar</a>
+        
+      </div>
+
+      <div class="course-card">
+        <img src="/img/heimich.png" alt="Maniobra de Heimlich">
+        <h3>Maniobra de Heimlich</h3>
+        <p class="duration">15 Minutos</p>
+        <p> Útil en Atragantamiento por objeto o comida.</p>
+        <a href="/html/curso2.html" class="start-button">Iniciar</a>
+      </div>
+
+      <div class="course-card">
+        <img src="/img/hemorragia.png" alt="Detener Hemorragias">
+        <h3>Maniobra de para detener Hemorragias</h3>
+        <p class="duration">60 Minutos</p>
+        <p class="desc">Útil en Sangrados externos.</p>
+        <a href="/html/curso3.html" class="start-button">Iniciar</a>
+      </div>
+    </section>
+  </main>
+
+ <footer class="site-footer">
+        <div class="footer-content">
+            <p>&copy; 2025 Cursos Médicos Velvet Health. Todos los derechos reservados</p>
+            <div class="footer-links">
+                <a href="#"><i class="fas fa-file-alt"></i> Términos y condiciones</a>
+                <a href="#"><i class="fas fa-shield-alt"></i> Política de Privacidad</a>
+            </div>
+            <p class="developer-info">Desarrollado por VelvetHealth Web Team</p>
+        </div>
+        <div class="footer-decoration">
+            <div class="square square1"></div>
+            <div class="square square2"></div>
+            <div class="square square3"></div>
+            <div class="square square4"></div>
+        </div>
+    </footer>
+</body>
+</html>
