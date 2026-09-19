@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import type { FormEvent } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -12,6 +12,7 @@ export function LoginForm() {
 
   const [correo, setCorreo] = useState('')
   const [contraseña, setContraseña] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [serverError, setServerError] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
@@ -64,7 +65,7 @@ export function LoginForm() {
           onChange={(event) => setCorreo(event.target.value)}
         />
         {errors.correo && (
-          <p className="mt-1 text-sm text-red-600">{errors.correo}</p>
+          <p className="mt-1 text-sm text-danger">{errors.correo}</p>
         )}
       </div>
 
@@ -72,22 +73,44 @@ export function LoginForm() {
         <label htmlFor="login-contraseña" className="field-label">
           Contraseña
         </label>
-        <input
-          id="login-contraseña"
-          type="password"
-          className="field-input"
-          placeholder="Contraseña"
-          autoComplete="current-password"
-          value={contraseña}
-          onChange={(event) => setContraseña(event.target.value)}
-        />
+        <div className="relative">
+          <input
+            id="login-contraseña"
+            type={showPassword ? 'text' : 'password'}
+            className="field-input pr-11"
+            placeholder="Contraseña"
+            autoComplete="current-password"
+            value={contraseña}
+            onChange={(event) => setContraseña(event.target.value)}
+          />
+          <button
+            type="button"
+            onClick={() => setShowPassword((value) => !value)}
+            aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 transition-colors hover:text-primary"
+          >
+            <i
+              className={`fa-solid ${showPassword ? 'fa-eye-slash' : 'fa-eye'}`}
+              aria-hidden="true"
+            />
+          </button>
+        </div>
         {errors.contraseña && (
-          <p className="mt-1 text-sm text-red-600">{errors.contraseña}</p>
+          <p className="mt-1 text-sm text-danger">{errors.contraseña}</p>
         )}
       </div>
 
+      <div className="text-right">
+        <Link
+          to="/recuperar-contrasena"
+          className="text-sm font-semibold text-primary hover:underline"
+        >
+          ¿Olvidaste tu contraseña?
+        </Link>
+      </div>
+
       {serverError && (
-        <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">
+        <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-danger">
           {serverError}
         </p>
       )}

@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
+import { roleBadgeClass, roleLabel } from '../lib/badges'
 
 export function ProfileDropdown() {
   const { user, logout } = useAuth()
@@ -60,6 +61,9 @@ export function ProfileDropdown() {
                   <p className="truncate text-sm text-gray-500">
                     {user.correo}
                   </p>
+                  <span className={`mt-2 ${roleBadgeClass(user.role)}`}>
+                    {roleLabel(user.role)}
+                  </span>
                 </div>
                 <Link
                   to="/perfil"

@@ -15,6 +15,7 @@ export function RegisterForm() {
   const [edad, setEdad] = useState('')
   const [correo, setCorreo] = useState('')
   const [contraseña, setContraseña] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
 
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [serverError, setServerError] = useState<string | null>(null)
@@ -72,74 +73,79 @@ export function RegisterForm() {
 
   return (
     <form onSubmit={handleSubmit} noValidate className="space-y-4">
-      <div>
-        <label htmlFor="registro-nombre" className="field-label">
-          Nombre
-        </label>
-        <input
-          id="registro-nombre"
-          type="text"
-          className="field-input"
-          placeholder="Tu nombre"
-          autoComplete="given-name"
-          value={nombre}
-          onChange={(event) => setNombre(event.target.value)}
-        />
-        {errors.nombre && (
-          <p className="mt-1 text-sm text-red-600">{errors.nombre}</p>
-        )}
+      <div className="grid gap-4 sm:grid-cols-2">
+        <div>
+          <label htmlFor="registro-nombre" className="field-label">
+            Nombre
+          </label>
+          <input
+            id="registro-nombre"
+            type="text"
+            className="field-input"
+            placeholder="Tu nombre"
+            autoComplete="given-name"
+            value={nombre}
+            onChange={(event) => setNombre(event.target.value)}
+          />
+          {errors.nombre && (
+            <p className="mt-1 text-sm text-danger">{errors.nombre}</p>
+          )}
+        </div>
+
+        <div>
+          <label htmlFor="registro-apellidos" className="field-label">
+            Apellidos
+          </label>
+          <input
+            id="registro-apellidos"
+            type="text"
+            className="field-input"
+            placeholder="Tus apellidos"
+            autoComplete="family-name"
+            value={apellidos}
+            onChange={(event) => setApellidos(event.target.value)}
+          />
+          {errors.apellidos && (
+            <p className="mt-1 text-sm text-danger">{errors.apellidos}</p>
+          )}
+        </div>
       </div>
 
-      <div>
-        <label htmlFor="registro-apellidos" className="field-label">
-          Apellidos
-        </label>
-        <input
-          id="registro-apellidos"
-          type="text"
-          className="field-input"
-          placeholder="Tus apellidos"
-          autoComplete="family-name"
-          value={apellidos}
-          onChange={(event) => setApellidos(event.target.value)}
-        />
-        {errors.apellidos && (
-          <p className="mt-1 text-sm text-red-600">{errors.apellidos}</p>
-        )}
-      </div>
+      <div className="grid gap-4 sm:grid-cols-2">
+        <div>
+          <label htmlFor="registro-profesion" className="field-label">
+            Profesión{' '}
+            <span className="font-normal text-gray-400">(opcional)</span>
+          </label>
+          <input
+            id="registro-profesion"
+            type="text"
+            className="field-input"
+            placeholder="Tu profesión"
+            autoComplete="organization-title"
+            value={profesion}
+            onChange={(event) => setProfesion(event.target.value)}
+          />
+        </div>
 
-      <div>
-        <label htmlFor="registro-profesion" className="field-label">
-          Profesión <span className="font-normal text-gray-400">(opcional)</span>
-        </label>
-        <input
-          id="registro-profesion"
-          type="text"
-          className="field-input"
-          placeholder="Tu profesión"
-          autoComplete="organization-title"
-          value={profesion}
-          onChange={(event) => setProfesion(event.target.value)}
-        />
-      </div>
-
-      <div>
-        <label htmlFor="registro-edad" className="field-label">
-          Edad <span className="font-normal text-gray-400">(opcional)</span>
-        </label>
-        <input
-          id="registro-edad"
-          type="number"
-          min={1}
-          max={120}
-          className="field-input"
-          placeholder="Tu edad"
-          value={edad}
-          onChange={(event) => setEdad(event.target.value)}
-        />
-        {errors.edad && (
-          <p className="mt-1 text-sm text-red-600">{errors.edad}</p>
-        )}
+        <div>
+          <label htmlFor="registro-edad" className="field-label">
+            Edad <span className="font-normal text-gray-400">(opcional)</span>
+          </label>
+          <input
+            id="registro-edad"
+            type="number"
+            min={1}
+            max={120}
+            className="field-input"
+            placeholder="Tu edad"
+            value={edad}
+            onChange={(event) => setEdad(event.target.value)}
+          />
+          {errors.edad && (
+            <p className="mt-1 text-sm text-danger">{errors.edad}</p>
+          )}
+        </div>
       </div>
 
       <div>
@@ -156,7 +162,7 @@ export function RegisterForm() {
           onChange={(event) => setCorreo(event.target.value)}
         />
         {errors.correo && (
-          <p className="mt-1 text-sm text-red-600">{errors.correo}</p>
+          <p className="mt-1 text-sm text-danger">{errors.correo}</p>
         )}
       </div>
 
@@ -164,22 +170,35 @@ export function RegisterForm() {
         <label htmlFor="registro-contraseña" className="field-label">
           Contraseña
         </label>
-        <input
-          id="registro-contraseña"
-          type="password"
-          className="field-input"
-          placeholder="Mínimo 8 caracteres"
-          autoComplete="new-password"
-          value={contraseña}
-          onChange={(event) => setContraseña(event.target.value)}
-        />
+        <div className="relative">
+          <input
+            id="registro-contraseña"
+            type={showPassword ? 'text' : 'password'}
+            className="field-input pr-11"
+            placeholder="Mínimo 8 caracteres"
+            autoComplete="new-password"
+            value={contraseña}
+            onChange={(event) => setContraseña(event.target.value)}
+          />
+          <button
+            type="button"
+            onClick={() => setShowPassword((value) => !value)}
+            aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 transition-colors hover:text-primary"
+          >
+            <i
+              className={`fa-solid ${showPassword ? 'fa-eye-slash' : 'fa-eye'}`}
+              aria-hidden="true"
+            />
+          </button>
+        </div>
         {errors.contraseña && (
-          <p className="mt-1 text-sm text-red-600">{errors.contraseña}</p>
+          <p className="mt-1 text-sm text-danger">{errors.contraseña}</p>
         )}
       </div>
 
       {serverError && (
-        <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">
+        <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-danger">
           {serverError}
         </p>
       )}

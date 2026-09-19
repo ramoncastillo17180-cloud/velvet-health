@@ -6,7 +6,10 @@ import { SectionBar } from '../components/SectionBar'
 export function Registro() {
   return (
     <PageTransition>
-      <SectionBar title="Registro Velvet Health" />
+      <SectionBar
+        title="Crear cuenta"
+        subtitle="Únete a Velvet Health y empieza a aprender"
+      />
       <div className="mx-auto max-w-md px-4 pb-12">
         <div className="card p-8">
           <RegisterForm />

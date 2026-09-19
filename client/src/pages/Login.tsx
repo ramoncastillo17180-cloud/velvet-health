@@ -11,7 +11,10 @@ export function Login() {
 
   return (
     <PageTransition>
-      <SectionBar title="Iniciar sesión" />
+      <SectionBar
+        title="Iniciar sesión"
+        subtitle="Bienvenido de nuevo a Velvet Health"
+      />
       <div className="mx-auto max-w-md px-4 pb-12">
         <div className="card p-8">
           {registered && (

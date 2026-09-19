@@ -1,43 +1,26 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { ApiError, getExam, submitExam } from '../api'
-import type { Answer, Exam as ExamData, ExamSubmitResult } from '../api'
+import type { Answer, ExamSubmitResult } from '../api'
+import { ErrorState } from '../components/ErrorState'
 import { ExamQuestion } from '../components/ExamQuestion'
 import { PageTransition } from '../components/PageTransition'
 import { ProgressCircle } from '../components/ProgressCircle'
 import { SectionBar } from '../components/SectionBar'
+import { Skeleton } from '../components/Skeleton'
+import { useAsyncData } from '../hooks/useAsyncData'
 
 export function Exam() {
   const { slug } = useParams<{ slug: string }>()
-
-  const [exam, setExam] = useState<ExamData | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [notFound, setNotFound] = useState(false)
+  const { data: exam, loading, error, reload } = useAsyncData(
+    () => getExam(slug ?? ''),
+    [slug],
+  )
 
   const [answers, setAnswers] = useState<Record<number, number>>({})
   const [result, setResult] = useState<ExamSubmitResult | null>(null)
   const [submitting, setSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
-
-  useEffect(() => {
-    if (!slug) return
-    let active = true
-    getExam(slug)
-      .then((data) => {
-        if (active) setExam(data)
-      })
-      .catch((error: unknown) => {
-        if (active && error instanceof ApiError && error.status === 404) {
-          setNotFound(true)
-        }
-      })
-      .finally(() => {
-        if (active) setLoading(false)
-      })
-    return () => {
-      active = false
-    }
-  }, [slug])
 
   function selectOption(questionId: number, optionId: number) {
     setAnswers((previous) => ({ ...previous, [questionId]: optionId }))
@@ -58,9 +41,9 @@ export function Exam() {
       const res = await submitExam(slug, payload)
       setResult(res)
       window.scrollTo({ top: 0, behavior: 'smooth' })
-    } catch (error) {
+    } catch (err) {
       setSubmitError(
-        error instanceof Error ? error.message : 'Error al enviar el examen',
+        err instanceof Error ? err.message : 'Error al enviar el examen',
       )
     } finally {
       setSubmitting(false)
@@ -72,21 +55,32 @@ export function Exam() {
       <SectionBar title="Examen" />
 
       <div className="mx-auto max-w-3xl px-4 pb-12">
-        {loading && <p className="text-gray-500">Cargando examen…</p>}
-
-        {notFound && (
-          <div className="text-center">
-            <p className="mb-4 text-gray-600">No se encontró este examen.</p>
-            <Link to="/practicas" className="btn-primary">
-              Volver a los cursos
-            </Link>
+        {loading && (
+          <div className="space-y-4">
+            <Skeleton className="h-5 w-2/3" />
+            {[0, 1, 2].map((item) => (
+              <Skeleton key={item} className="h-44 w-full" />
+            ))}
           </div>
         )}
+
+        {error &&
+          (error instanceof ApiError && error.status === 404 ? (
+            <div className="text-center">
+              <p className="mb-4 text-gray-600">No se encontró este examen.</p>
+              <Link to="/practicas" className="btn-primary">
+                Volver a los cursos
+              </Link>
+            </div>
+          ) : (
+            <ErrorState error={error} onRetry={reload} />
+          ))}
 
         {exam && !result && (
           <div className="space-y-6">
             <p className="text-gray-600">
-              Responde todas las preguntas. Necesitas un 70% para aprobar.
+              Responde todas las preguntas. Necesitas al menos el 70% para
+              aprobar.
             </p>
             {exam.questions.map((question, index) => (
               <ExamQuestion
@@ -98,7 +92,7 @@ export function Exam() {
               />
             ))}
             {submitError && (
-              <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">
+              <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-danger">
                 {submitError}
               </p>
             )}
@@ -129,7 +123,7 @@ export function Exam() {
             />
             <h2
               className={`mt-4 text-2xl font-semibold ${
-                result.passed ? 'text-primary' : 'text-red-600'
+                result.passed ? 'text-primary' : 'text-danger'
               }`}
             >
               {result.passed ? '¡Aprobado!' : 'No aprobado'}
@@ -139,7 +133,7 @@ export function Exam() {
               <strong className="text-gray-800">{result.score}%</strong>.
               {result.passed
                 ? ' Felicitaciones por completar el curso.'
-                : ' Necesitas al menos 70% para aprobar. Inténtalo de nuevo.'}
+                : ' Inténtalo de nuevo para alcanzar el mínimo requerido.'}
             </p>
             <div className="mt-6 flex flex-col justify-center gap-3 sm:flex-row">
               <Link to={`/cursos/${slug}`} className="btn-outline">
