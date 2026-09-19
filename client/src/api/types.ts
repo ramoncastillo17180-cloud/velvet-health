@@ -125,6 +125,7 @@ export interface InstructorApplication {
     edad: number | null
   }
   documents: Document[]
+  reviewedBy: { id: number; nombre: string; apellidos: string } | null
   reviewedAt: string | null
   reviewNotes: string | null
 }
@@ -235,4 +236,130 @@ export interface ExamResponse {
 
 export interface ResultsResponse {
   results: ExamResult[]
+}
+
+// --- Instructor (own courses + questions exposing the correct answer) ---
+
+/** Course as returned by the instructor endpoints (carries `status` + owner). */
+export interface InstructorCourse {
+  id: number
+  slug: string
+  title: string
+  description: string
+  minutes: number
+  image: string
+  passThreshold: number
+  status: CourseStatus
+  createdById?: number
+  createdAt?: string
+  updatedAt?: string
+}
+
+/** Question option with the correctness flag (instructor-facing only). */
+export interface InstructorQuestionOption {
+  id: number
+  text: string
+  isCorrect: boolean
+}
+
+/** Exam question as managed by an instructor. */
+export interface InstructorQuestion {
+  id: number
+  prompt: string
+  order: number
+  options: InstructorQuestionOption[]
+}
+
+/** Full own course with structured content and exam questions. */
+export interface InstructorCourseDetail extends InstructorCourse {
+  modules: Module[]
+  questions: InstructorQuestion[]
+}
+
+/** Course returned by the admin moderation queue (owner metadata included). */
+export interface AdminCourse extends Course {
+  status: CourseStatus
+  createdBy: {
+    id: number
+    nombre: string
+    apellidos: string
+    correo: string
+  }
+}
+
+// --- Instructor + admin request payloads ---
+
+export interface CourseInput {
+  title: string
+  description: string
+  minutes: number
+  image: string
+  passThreshold?: number
+  slug?: string
+}
+
+export interface ModuleInput {
+  title: string
+  description?: string
+  order: number
+}
+
+export interface LessonInput {
+  title: string
+  content: string
+  order: number
+  durationMinutes?: number | null
+}
+
+export interface QuestionOptionInput {
+  text: string
+  isCorrect: boolean
+}
+
+export interface QuestionInput {
+  prompt: string
+  order: number
+  options: QuestionOptionInput[]
+}
+
+// --- Instructor + admin response envelopes ---
+
+export interface InstructorCoursesResponse {
+  courses: InstructorCourse[]
+}
+
+export interface InstructorCourseResponse {
+  course: InstructorCourseDetail
+}
+
+export interface ModuleResponse {
+  module: Module
+}
+
+export interface LessonResponse {
+  lesson: Lesson
+}
+
+export interface InstructorQuestionResponse {
+  question: InstructorQuestion
+}
+
+export interface CourseStatusResponse {
+  course: { id: number; status: CourseStatus }
+}
+
+export interface InstructorApplicationResponse {
+  application: { id: number; status: ApplicationStatus; createdAt: string }
+}
+
+export interface InstructorApplicationsResponse {
+  applications: InstructorApplication[]
+}
+
+export interface AdminCoursesResponse {
+  courses: AdminCourse[]
+}
+
+export interface AdminUsersResponse {
+  users: User[]
 }
