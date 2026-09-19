@@ -462,3 +462,101 @@ Response `200` `{ "course": { "id": 10, "status": "PUBLISHED" } }` (or
 Streams a credential document with `Content-Type: <stored mimeType>` and
 `Content-Disposition: attachment; filename="<fileName>"`. `404` missing;
 `403` non-admin; `401` unauthenticated. There is no public URL for any document.
+
+---
+
+# API Contract v2 — Dashboards + Admin Users
+
+> Phase 4 (dashboard APIs + admin user list). Adds the three role-scoped
+> dashboards and replaces the generic user list with an admin-only endpoint. All
+> routes require `Authorization: Bearer <token>`.
+
+## Student dashboard
+
+### `GET /api/me/dashboard`
+
+Authorized for `STUDENT` only (`403` for any other role). Returns the
+authenticated student's progress, self-scoped results, and recommendations.
+
+Response `200`:
+
+```json
+{
+  "dashboard": {
+    "student": { "id": 1, "nombre": "...", "role": "STUDENT" },
+    "progress": { "coursesStarted": 2, "coursesCompleted": 1, "totalCourses": 3 },
+    "results": [ { "id": 42, "courseId": 1, "courseSlug": "rcp", "score": 80, "passed": true, "createdAt": "ISO" } ],
+    "recommendations": [ { "id": 2, "slug": "hemorragias", "title": "Hemorragias Externas", "image": "hemorragia.png", "minutes": 60 } ]
+  }
+}
+```
+
+Semantics: `coursesStarted` = distinct courses with at least one result;
+`coursesCompleted` = distinct courses with a passing result; `totalCourses` =
+published courses; `recommendations` = published courses the student has not yet
+passed.
+
+## Instructor dashboard
+
+### `GET /api/instructor/dashboard`
+
+Authorized for `INSTRUCTOR` and `ADMIN` (`403` for `STUDENT`). Returns the
+caller's own courses (all statuses) with per-course enrollment and aggregate
+statistics scoped to that instructor.
+
+Response `200`:
+
+```json
+{
+  "dashboard": {
+    "instructor": { "id": 2, "nombre": "...", "role": "INSTRUCTOR" },
+    "stats": { "totalCourses": 5, "draft": 2, "pending": 1, "published": 2, "totalStudents": 120, "totalResults": 340 },
+    "courses": [ { "id": 10, "slug": "...", "title": "...", "status": "PUBLISHED", "minutes": 20, "studentsCount": 90 } ]
+  }
+}
+```
+
+`studentsCount` = distinct students with a result in that course;
+`totalStudents` = distinct students across all owned courses; `totalResults` =
+total exam results across owned courses.
+
+## Admin dashboard
+
+### `GET /api/admin/dashboard`
+
+Authorized for `ADMIN` only (`403` otherwise). Returns platform-wide aggregate
+counts.
+
+Response `200`:
+
+```json
+{
+  "dashboard": {
+    "counts": {
+      "users": 120, "students": 115, "instructors": 4, "admins": 1,
+      "courses": 8, "publishedCourses": 3, "pendingCourses": 2,
+      "applications": 6, "pendingApplications": 3, "results": 400
+    }
+  }
+}
+```
+
+## Admin users
+
+### `GET /api/admin/users`
+
+Authorized for `ADMIN` only (`403` otherwise). Returns all users, including
+`role` and `createdAt`.
+
+Response `200`:
+
+```json
+{ "users": [ { "id": 1, "nombre": "...", "apellidos": "...", "profesion": null, "edad": null, "correo": "...", "role": "STUDENT", "createdAt": "ISO" } ] }
+```
+
+### Breaking change (removal)
+
+`GET /api/users` is **removed** and **replaced** by `GET /api/admin/users`
+(admin-only). The old route is deleted from the server; calls to
+`GET /api/users` now return `404`. This is the single deliberate v1 break in the
+transformation.
