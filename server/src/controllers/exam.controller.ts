@@ -14,6 +14,7 @@ export async function getExam(req: Request, res: Response): Promise<void> {
     where: { slug },
     select: {
       id: true,
+      status: true,
       questions: {
         orderBy: { order: "asc" },
         select: {
@@ -28,7 +29,8 @@ export async function getExam(req: Request, res: Response): Promise<void> {
     },
   });
 
-  if (!course) {
+  // The exam is public only for PUBLISHED courses; drafts/pending are hidden.
+  if (!course || course.status !== "PUBLISHED") {
     throw new HttpError(404, "NOT_FOUND", "Curso no encontrado");
   }
 
@@ -57,6 +59,7 @@ export async function submitExam(req: Request, res: Response): Promise<void> {
     where: { slug },
     select: {
       id: true,
+      status: true,
       passThreshold: true,
       questions: {
         select: {
@@ -69,7 +72,7 @@ export async function submitExam(req: Request, res: Response): Promise<void> {
     },
   });
 
-  if (!course) {
+  if (!course || course.status !== "PUBLISHED") {
     throw new HttpError(404, "NOT_FOUND", "Curso no encontrado");
   }
 
