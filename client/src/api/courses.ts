@@ -1,4 +1,4 @@
-// Course endpoints (real API only — no offline mock fallback).
+// Course endpoints.
 
 import { apiFetch } from './client'
 import type {

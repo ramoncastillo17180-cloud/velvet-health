@@ -1,4 +1,4 @@
-// Auth endpoints (real API only — no offline mock fallback).
+// Auth endpoints.
 
 import { apiFetch } from './client'
 import type {

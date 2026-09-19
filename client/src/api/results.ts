@@ -1,4 +1,4 @@
-// Results endpoints (real API only — no offline mock fallback).
+// Results endpoints.
 
 import { apiFetch } from './client'
 import type { ExamResult, ResultsResponse } from './types'
