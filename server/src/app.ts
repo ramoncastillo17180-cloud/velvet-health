@@ -5,6 +5,8 @@ import { authRouter } from "./routes/auth.routes";
 import { courseRouter } from "./routes/course.routes";
 import { meRouter } from "./routes/me.routes";
 import { userRouter } from "./routes/user.routes";
+import { instructorRouter } from "./routes/instructor.routes";
+import { adminRouter } from "./routes/admin.routes";
 import { errorHandler, notFoundHandler } from "./middleware/errorHandler";
 
 export function createApp(): express.Express {
@@ -18,6 +20,8 @@ export function createApp(): express.Express {
   app.use("/api/courses", courseRouter);
   app.use("/api/me", meRouter);
   app.use("/api/users", userRouter);
+  app.use("/api/instructor", instructorRouter);
+  app.use("/api/admin", adminRouter);
 
   app.use(notFoundHandler);
   app.use(errorHandler);
