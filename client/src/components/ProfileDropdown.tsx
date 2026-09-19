@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
-import { roleBadgeClass, roleLabel } from '../lib/badges'
+import { roleBadgeClass, roleDashboardPath, roleLabel } from '../lib/badges'
 
 export function ProfileDropdown() {
   const { user, logout } = useAuth()
@@ -66,9 +66,16 @@ export function ProfileDropdown() {
                   </span>
                 </div>
                 <Link
-                  to="/perfil"
+                  to={roleDashboardPath(user.role)}
                   onClick={() => setOpen(false)}
                   className="btn-pill-primary"
+                >
+                  Mi panel
+                </Link>
+                <Link
+                  to="/perfil"
+                  onClick={() => setOpen(false)}
+                  className="btn-pill-outline"
                 >
                   Mi perfil
                 </Link>

@@ -20,6 +20,17 @@ const STATUS_STYLES: Record<CourseStatus | ApplicationStatus, string> = {
   APPROVED: 'bg-approved/15 text-approved',
 }
 
+const DASHBOARD_PATHS: Record<Role, string> = {
+  STUDENT: '/dashboard',
+  INSTRUCTOR: '/instructor',
+  ADMIN: '/admin',
+}
+
+/** Route to the dashboard matching the authenticated user's role. */
+export function roleDashboardPath(role: Role): string {
+  return DASHBOARD_PATHS[role]
+}
+
 export function roleBadgeClass(role: Role): string {
   return `badge-role ${ROLE_STYLES[role]}`
 }
